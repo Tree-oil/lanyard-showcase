@@ -20,14 +20,14 @@ export default function App() {
   const [isCustomizerOpen, setIsCustomizerOpen] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
-  // Bilingual Language State
+  // Bilingual Language State (Defaults to English)
   const [lang, setLang] = useState<Language>(() => {
     try {
-      const saved = localStorage.getItem('lanyard_lang');
+      const saved = localStorage.getItem('lanyard_lang_v2');
       if (saved === 'zh' || saved === 'en') return saved;
-      return typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+      return 'en'; // default to English
     } catch {
-      return 'zh';
+      return 'en';
     }
   });
 
@@ -35,7 +35,7 @@ export default function App() {
     setLang(prev => {
       const next = prev === 'zh' ? 'en' : 'zh';
       try {
-        localStorage.setItem('lanyard_lang', next);
+        localStorage.setItem('lanyard_lang_v2', next);
       } catch {}
       return next;
     });

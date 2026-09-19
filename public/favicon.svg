@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <!-- Card Ceramic Gradient -->
+    <linearGradient id="cardGrad" x1="5" y1="7" x2="27" y2="31" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+
+    <!-- Strap Texture Gradient -->
+    <linearGradient id="strapGrad" x1="16" y1="0" x2="16" y2="6.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#090d16"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Clasp Metal Gradient -->
+    <linearGradient id="claspGrad" x1="13" y1="5" x2="19" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <!-- Avatar Gradient -->
+    <linearGradient id="avatarGrad" x1="13" y1="12" x2="19" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Card Ambient Shadow -->
+    <filter id="badgeShadow" x="2" y="5" width="28" height="27" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- Lanyard Woven Strap (Hanging from top) -->
+  <path d="M13.5 0h5v6h-5z" fill="url(#strapGrad)"/>
+  <!-- Strap High-Tech Accent Centerline -->
+  <line x1="16" y1="0" x2="16" y2="6" stroke="#38bdf8" stroke-width="1"/>
+
+  <!-- Metallic Clasp Buckle -->
+  <rect x="12.5" y="4.8" width="7" height="3.2" rx="1" fill="url(#claspGrad)" stroke="#475569" stroke-width="0.5"/>
+  <circle cx="16" cy="6.4" r="0.8" fill="#0f172a"/>
+
+  <!-- Badge Card with Soft Realistic Shadow -->
+  <g filter="url(#badgeShadow)">
+    <rect x="5" y="7.5" width="22" height="23.5" rx="4.2" fill="url(#cardGrad)" stroke="#0f172a" stroke-width="1.2"/>
+  </g>
+
+  <!-- Lanyard Slot Punch Cutout -->
+  <rect x="13.5" y="9.2" width="5" height="1.4" rx="0.7" fill="#0f172a"/>
+
+  <!-- Smart Security Chip (Gold NFC Module) -->
+  <rect x="7.6" y="12.2" width="3.4" height="2.8" rx="0.6" fill="#f59e0b"/>
+  <path d="M7.6 13.6h3.4M9.3 12.2v2.8" stroke="#b45309" stroke-width="0.35"/>
+
+  <!-- Contactless NFC Wave -->
+  <path d="M12.2 12.8a2 2 0 0 1 0 1.6" stroke="#64748b" stroke-width="0.6" stroke-linecap="round"/>
+
+  <!-- Studio Portrait Avatar -->
+  <circle cx="16" cy="15.8" r="3.6" fill="url(#avatarGrad)"/>
+  <!-- Minimalist Head & Torso -->
+  <circle cx="16" cy="14.6" r="1.3" fill="#38bdf8"/>
+  <path d="M13.6 18.2c.4-1.1 1.3-1.4 2.4-1.4s2 .3 2.4 1.4" stroke="#38bdf8" stroke-width="0.9" stroke-linecap="round"/>
+
+  <!-- Identity Typography & Barcode Accent Lines -->
+  <rect x="8.5" y="21.2" width="15" height="2" rx="1" fill="#0f172a"/>
+  <rect x="10.5" y="24.4" width="11" height="1.4" rx="0.7" fill="#64748b"/>
+  <rect x="12" y="26.8" width="8" height="1" rx="0.5" fill="#0284c7"/>
+</svg>
