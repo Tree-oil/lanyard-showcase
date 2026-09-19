@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { BadgeData, BadgeTheme } from '../types';
 import { PRESET_BADGES } from '../data/presets';
 import { X, Upload, User, Palette, Sliders, RefreshCw, Image as ImageIcon } from 'lucide-react';
+import { Language, translations } from '../i18n/translations';
 
 interface BadgeCustomizerProps {
   badge: BadgeData;
@@ -13,6 +14,7 @@ interface BadgeCustomizerProps {
   onLanyardWidthChange: (w: number) => void;
   gravity: [number, number, number];
   onGravityChange: (g: [number, number, number]) => void;
+  lang?: Language;
 }
 
 export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
@@ -24,8 +26,10 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
   lanyardWidth,
   onLanyardWidthChange,
   gravity,
-  onGravityChange
+  onGravityChange,
+  lang = 'zh'
 }) => {
+  const t = translations[lang].customizer;
   const [activeTab, setActiveTab] = React.useState<'info' | 'theme' | 'physics' | 'customImages'>('info');
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const frontInputRef = useRef<HTMLInputElement>(null);
@@ -78,8 +82,8 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.06]">
         <div>
-          <h2 className="text-sm font-semibold text-neutral-900 tracking-tight">工牌配置</h2>
-          <p className="text-[12px] text-neutral-500">极简白底风格与物理参数</p>
+          <h2 className="text-sm font-semibold text-neutral-900 tracking-tight">{t.title}</h2>
+          <p className="text-[12px] text-neutral-500">{t.subtitle}</p>
         </div>
         <button
           onClick={onClose}
@@ -93,10 +97,10 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
       <div className="px-6 py-3 border-b border-black/[0.06] bg-neutral-50/50">
         <div className="grid grid-cols-4 gap-1 p-1 bg-neutral-200/60 rounded-xl border border-black/[0.04]">
           {[
-            { id: 'info', label: '信息', icon: User },
-            { id: 'theme', label: '主题', icon: Palette },
-            { id: 'physics', label: '物理', icon: Sliders },
-            { id: 'customImages', label: '贴图', icon: ImageIcon }
+            { id: 'info', label: t.tabs.basic, icon: User },
+            { id: 'theme', label: t.tabs.theme, icon: Palette },
+            { id: 'physics', label: t.tabs.lanyard, icon: Sliders },
+            { id: 'customImages', label: lang === 'en' ? 'Textures' : '贴图', icon: ImageIcon }
           ].map(tab => {
             const isActive = activeTab === tab.id;
             return (
@@ -124,14 +128,16 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Avatar Section */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-2 uppercase tracking-wider">
-                头像照片
+                {lang === 'en' ? 'Portrait Photo' : '头像照片'}
               </label>
               <div className="flex items-center gap-4">
                 <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-black/[0.1] bg-neutral-100 shrink-0 shadow-sm">
                   {badge.avatarUrl ? (
                     <img src={badge.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">无</div>
+                    <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">
+                      {lang === 'en' ? 'None' : '无'}
+                    </div>
                   )}
                 </div>
                 <div className="flex-1 space-y-2">
@@ -139,7 +145,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                     onClick={() => avatarInputRef.current?.click()}
                     className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 text-xs font-medium transition-all cursor-pointer"
                   >
-                    <Upload className="w-3.5 h-3.5 text-neutral-700" /> 上传肖像照
+                    <Upload className="w-3.5 h-3.5 text-neutral-700" /> {lang === 'en' ? 'Upload Photo' : '上传肖像照'}
                   </button>
                   <input
                     ref={avatarInputRef}
@@ -152,7 +158,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                     type="text"
                     value={badge.avatarUrl}
                     onChange={e => handleTextChange('avatarUrl', e.target.value)}
-                    placeholder="或输入图片 URL..."
+                    placeholder={lang === 'en' ? 'or paste image URL...' : '或输入图片 URL...'}
                     className="w-full py-1.5 px-3 rounded-lg bg-neutral-50 border border-neutral-200 text-xs text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:border-black/30 focus:bg-white"
                   />
                 </div>
@@ -162,7 +168,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Brand Logo Type */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-2 uppercase tracking-wider">
-                品牌标志 (Brand Logo)
+                {lang === 'en' ? 'Brand Emblem' : '品牌标志 (Brand Logo)'}
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -191,7 +197,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Names */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">姓名 (中文)</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Chinese Name' : '姓名 (中文)'}
+                </label>
                 <input
                   type="text"
                   value={badge.name}
@@ -200,7 +208,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">英文名</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'English Name' : '英文名'}
+                </label>
                 <input
                   type="text"
                   value={badge.englishName}
@@ -213,7 +223,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Role & Dept */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">职位 Title</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Role / Title' : '职位 Title'}
+                </label>
                 <input
                   type="text"
                   value={badge.role}
@@ -222,7 +234,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">部门 Department</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Department' : '部门 Department'}
+                </label>
                 <input
                   type="text"
                   value={badge.department}
@@ -235,7 +249,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Company & Subtitle */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">所属组织</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Organization' : '所属组织'}
+                </label>
                 <input
                   type="text"
                   value={badge.company}
@@ -244,7 +260,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">园区 / 地址</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Campus / Address' : '园区 / 地址'}
+                </label>
                 <input
                   type="text"
                   value={badge.companyEn}
@@ -257,7 +275,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* ID & Clearance */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">工号 (ID)</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Employee ID' : '工号 (ID)'}
+                </label>
                 <input
                   type="text"
                   value={badge.employeeId}
@@ -266,7 +286,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1">权限级别</label>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1">
+                  {lang === 'en' ? 'Clearance Level' : '权限级别'}
+                </label>
                 <input
                   type="text"
                   value={badge.accessLevel}
@@ -283,7 +305,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
           <div className="space-y-6">
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-3 uppercase tracking-wider">
-                选择预设风格
+                {lang === 'en' ? 'Preset Styles' : '选择预设风格'}
               </label>
               <div className="grid grid-cols-1 gap-2">
                 {PRESET_BADGES.map(preset => {
@@ -311,7 +333,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                         </div>
                       </div>
                       <span className="text-[11px] font-mono text-neutral-400">
-                        {preset.styleMode === 'light' ? '亮色' : '暗色'}
+                        {preset.styleMode === 'light' ? (lang === 'en' ? 'Light' : '亮色') : (lang === 'en' ? 'Dark' : '暗色')}
                       </span>
                     </button>
                   );
@@ -322,14 +344,14 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Chip Style */}
             <div className="pt-4 border-t border-neutral-200 space-y-3">
               <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
-                智能芯片质感 (NFC Smart Chip)
+                {lang === 'en' ? 'NFC Smart Chip Finish' : '智能芯片质感 (NFC Smart Chip)'}
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { id: 'titanium', label: '钛金属' },
-                  { id: 'silver', label: '浅银' },
-                  { id: 'stealth', label: '曜石黑' },
-                  { id: 'gold', label: '微金' }
+                  { id: 'titanium', label: lang === 'en' ? 'Titanium' : '钛金属' },
+                  { id: 'silver', label: lang === 'en' ? 'Silver' : '浅银' },
+                  { id: 'stealth', label: lang === 'en' ? 'Stealth' : '曜石黑' },
+                  { id: 'gold', label: lang === 'en' ? 'Gold' : '微金' }
                 ].map(chip => {
                   const isCur = badge.theme.chipColor === chip.id;
                   return (
@@ -352,11 +374,13 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Colors */}
             <div className="pt-4 border-t border-neutral-200 space-y-4">
               <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
-                色彩微调
+                {lang === 'en' ? 'Color Customization' : '色彩微调'}
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] text-neutral-500 mb-1">卡面基色</label>
+                  <label className="block text-[11px] text-neutral-500 mb-1">
+                    {lang === 'en' ? 'Card Base Color' : '卡面基色'}
+                  </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -368,7 +392,9 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-neutral-500 mb-1">挂带织物颜色</label>
+                  <label className="block text-[11px] text-neutral-500 mb-1">
+                    {lang === 'en' ? 'Lanyard Strap Color' : '挂带织物颜色'}
+                  </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -391,7 +417,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
-                  挂绳织带宽度 (lanyardWidth)
+                  {lang === 'en' ? 'Lanyard Strap Width' : '挂绳织带宽度 (lanyardWidth)'}
                 </label>
                 <span className="text-xs font-mono text-neutral-800">{lanyardWidth.toFixed(1)}</span>
               </div>
@@ -405,22 +431,22 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                 className="w-full accent-black cursor-pointer"
               />
               <div className="flex justify-between text-[11px] text-neutral-400 mt-1">
-                <span>0.5 (精炼极简)</span>
-                <span>1.0 (标准织带)</span>
-                <span>2.0 (展会加宽)</span>
+                <span>0.5 ({lang === 'en' ? 'Slim' : '精炼极简'})</span>
+                <span>1.0 ({lang === 'en' ? 'Standard' : '标准织带'})</span>
+                <span>2.0 ({lang === 'en' ? 'Wide' : '展会加宽'})</span>
               </div>
             </div>
 
             {/* Strap Text */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-1 uppercase tracking-wider">
-                织带印字 (Strap Text)
+                {lang === 'en' ? 'Strap Inscription' : '织带印字 (Strap Text)'}
               </label>
               <input
                 type="text"
                 value={badge.theme.strapText || ''}
                 onChange={e => handleThemeChange('strapText', e.target.value)}
-                placeholder="例如: STUDIO LAB • INTERFACE DESIGN • CREATIVE ACCESS"
+                placeholder={lang === 'en' ? 'e.g. STUDIO LAB • INTERFACE DESIGN' : '例如: STUDIO LAB • INTERFACE DESIGN • CREATIVE ACCESS'}
                 className="w-full py-2 px-3 rounded-xl bg-neutral-50 border border-neutral-200 text-xs font-sans text-neutral-900 focus:outline-none focus:border-black/30 focus:bg-white"
               />
             </div>
@@ -428,14 +454,30 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Gravity */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-2 uppercase tracking-wider">
-                物理重力环境 (Gravity Vector)
+                {lang === 'en' ? 'Physics Gravity Field' : '物理重力环境 (Gravity Vector)'}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: '地球重力 (1.0 G)', val: [0, -40, 0] as [number, number, number], desc: '标准自然垂直垂坠' },
-                  { label: '月球低重力 (0.16 G)', val: [0, -12, 0] as [number, number, number], desc: '缓慢轻盈浮动' },
-                  { label: '零重力太空 (0.0 G)', val: [0, -2, 0] as [number, number, number], desc: '无拘束三维失重' },
-                  { label: '高重力 (2.0 G)', val: [0, -85, 0] as [number, number, number], desc: '强阻尼快速归位' }
+                  {
+                    label: lang === 'en' ? 'Earth (1.0 G)' : '地球重力 (1.0 G)',
+                    val: [0, -40, 0] as [number, number, number],
+                    desc: lang === 'en' ? 'Standard natural vertical drop' : '标准自然垂直垂坠'
+                  },
+                  {
+                    label: lang === 'en' ? 'Moon (0.16 G)' : '月球低重力 (0.16 G)',
+                    val: [0, -12, 0] as [number, number, number],
+                    desc: lang === 'en' ? 'Slow, floating sensation' : '缓慢轻盈浮动'
+                  },
+                  {
+                    label: lang === 'en' ? 'Zero-G Space (0.0 G)' : '零重力太空 (0.0 G)',
+                    val: [0, -2, 0] as [number, number, number],
+                    desc: lang === 'en' ? 'Unconstrained 3D motion' : '无拘束三维失重'
+                  },
+                  {
+                    label: lang === 'en' ? 'Heavy Gravity (2.0 G)' : '高重力 (2.0 G)',
+                    val: [0, -85, 0] as [number, number, number],
+                    desc: lang === 'en' ? 'High damping rapid settling' : '强阻尼快速归位'
+                  }
                 ].map((item, idx) => {
                   const isCur = gravity[1] === item.val[1];
                   return (
@@ -462,20 +504,22 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
         {activeTab === 'customImages' && (
           <div className="space-y-5">
             <div className="p-3.5 rounded-xl bg-neutral-100 border border-neutral-200 text-[12px] text-neutral-700 leading-relaxed">
-              支持直接导入你自己设计好的完整卡片正面、背面或挂带纹理，组件会自动贴合 3D 模型 UV。
+              {lang === 'en'
+                ? 'Import custom card front, back, or lanyard strap textures. Automatically mapped to the 3D model UV.'
+                : '支持直接导入你自己设计好的完整卡片正面、背面或挂带纹理，组件会自动贴合 3D 模型 UV。'}
             </div>
 
             {/* Front Image Upload */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-2">
-                自定义卡片正面 (frontImage)
+                {lang === 'en' ? 'Custom Card Front (frontImage)' : '自定义卡片正面 (frontImage)'}
               </label>
               <div className="space-y-2">
                 <button
                   onClick={() => frontInputRef.current?.click()}
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 text-xs font-medium transition-all cursor-pointer"
                 >
-                  <Upload className="w-3.5 h-3.5 text-neutral-700" /> 上传正面设计图 (PNG/JPG)
+                  <Upload className="w-3.5 h-3.5 text-neutral-700" /> {lang === 'en' ? 'Upload Front Design (PNG/JPG)' : '上传正面设计图 (PNG/JPG)'}
                 </button>
                 <input
                   ref={frontInputRef}
@@ -489,7 +533,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                     onClick={() => handleTextChange('customFrontImage', null)}
                     className="text-[11px] text-rose-500 hover:underline cursor-pointer"
                   >
-                    清除自定义正面图 (恢复动态排版)
+                    {lang === 'en' ? 'Clear custom front (restore dynamic layout)' : '清除自定义正面图 (恢复动态排版)'}
                   </button>
                 )}
               </div>
@@ -498,14 +542,14 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Back Image Upload */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-2">
-                自定义卡片背面 (backImage)
+                {lang === 'en' ? 'Custom Card Back (backImage)' : '自定义卡片背面 (backImage)'}
               </label>
               <div className="space-y-2">
                 <button
                   onClick={() => backInputRef.current?.click()}
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 text-xs font-medium transition-all cursor-pointer"
                 >
-                  <Upload className="w-3.5 h-3.5 text-neutral-700" /> 上传背面设计图 (PNG/JPG)
+                  <Upload className="w-3.5 h-3.5 text-neutral-700" /> {lang === 'en' ? 'Upload Back Design (PNG/JPG)' : '上传背面设计图 (PNG/JPG)'}
                 </button>
                 <input
                   ref={backInputRef}
@@ -519,7 +563,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                     onClick={() => handleTextChange('customBackImage', null)}
                     className="text-[11px] text-rose-500 hover:underline cursor-pointer"
                   >
-                    清除自定义背面图 (恢复动态排版)
+                    {lang === 'en' ? 'Clear custom back (restore dynamic layout)' : '清除自定义背面图 (恢复动态排版)'}
                   </button>
                 )}
               </div>
@@ -528,14 +572,14 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
             {/* Lanyard Image Upload */}
             <div>
               <label className="block text-[11px] font-semibold text-neutral-500 mb-2">
-                自定义挂绳贴图 (lanyardImage)
+                {lang === 'en' ? 'Custom Lanyard Texture (lanyardImage)' : '自定义挂绳贴图 (lanyardImage)'}
               </label>
               <div className="space-y-2">
                 <button
                   onClick={() => lanyardInputRef.current?.click()}
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 text-xs font-medium transition-all cursor-pointer"
                 >
-                  <Upload className="w-3.5 h-3.5 text-neutral-700" /> 上传织带纹理 (PNG)
+                  <Upload className="w-3.5 h-3.5 text-neutral-700" /> {lang === 'en' ? 'Upload Strap Texture (PNG)' : '上传织带纹理 (PNG)'}
                 </button>
                 <input
                   ref={lanyardInputRef}
@@ -549,7 +593,7 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
                     onClick={() => handleTextChange('customLanyardImage', null)}
                     className="text-[11px] text-rose-500 hover:underline cursor-pointer"
                   >
-                    清除自定义挂绳贴图 (恢复默认织带)
+                    {lang === 'en' ? 'Clear custom lanyard (restore default strap)' : '清除自定义挂绳贴图 (恢复默认织带)'}
                   </button>
                 )}
               </div>
@@ -564,13 +608,13 @@ export const BadgeCustomizer: React.FC<BadgeCustomizerProps> = ({
           onClick={onReset}
           className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
         >
-          <RefreshCw className="w-3.5 h-3.5" /> 恢复初始设计
+          <RefreshCw className="w-3.5 h-3.5" /> {lang === 'en' ? 'Reset to Default' : '恢复初始设计'}
         </button>
         <button
           onClick={onClose}
           className="px-5 py-2 rounded-xl bg-black text-white hover:bg-neutral-800 text-xs font-medium transition-all cursor-pointer shadow-md"
         >
-          完成
+          {lang === 'en' ? 'Done' : '完成'}
         </button>
       </div>
     </div>

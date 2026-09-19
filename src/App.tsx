@@ -7,6 +7,7 @@ import { ControlToolbar, PIXEL_COLORS, PixelColorOption } from './components/Con
 import { BadgeData } from './types';
 import { PRESET_BADGES } from './data/presets';
 import { generateFrontBadge, generateBackBadge, generateLanyardStrap } from './utils/badgeGenerator';
+import { Language, translations } from './i18n/translations';
 
 export default function App() {
   const [badge, setBadge] = useState<BadgeData>(PRESET_BADGES[0]);
@@ -18,6 +19,27 @@ export default function App() {
   const [shakeTrigger, setShakeTrigger] = useState<number>(0);
   const [isCustomizerOpen, setIsCustomizerOpen] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+
+  // Bilingual Language State
+  const [lang, setLang] = useState<Language>(() => {
+    try {
+      const saved = localStorage.getItem('lanyard_lang');
+      if (saved === 'zh' || saved === 'en') return saved;
+      return typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+    } catch {
+      return 'zh';
+    }
+  });
+
+  const handleToggleLanguage = () => {
+    setLang(prev => {
+      const next = prev === 'zh' ? 'en' : 'zh';
+      try {
+        localStorage.setItem('lanyard_lang', next);
+      } catch {}
+      return next;
+    });
+  };
 
   // Background Pixel Animal & Color settings
   const [currentAnimal, setCurrentAnimal] = useState<AnimalType>('deer');
@@ -118,6 +140,8 @@ export default function App() {
         onSelectAnimal={setCurrentAnimal}
         currentColor={currentColor}
         onSelectColor={setCurrentColor}
+        lang={lang}
+        onToggleLanguage={handleToggleLanguage}
       />
 
       {/* 3. 3D Lanyard Canvas Scene (Hanging freely over protected clear center) */}
@@ -147,13 +171,14 @@ export default function App() {
         onLanyardWidthChange={setLanyardWidth}
         gravity={gravity}
         onGravityChange={setGravity}
+        lang={lang}
       />
 
       {/* 5. Minimal Status Capsule */}
       {isGenerating && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-2xl px-3.5 py-1.5 rounded-full border border-black/[0.08] text-[11px] text-neutral-700 flex items-center gap-2 shadow-lg">
           <div className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
-          <span>正在渲染材质...</span>
+          <span>{translations[lang].status.rendering}</span>
         </div>
       )}
     </div>

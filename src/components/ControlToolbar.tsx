@@ -2,8 +2,9 @@ import React from 'react';
 import { BadgeData } from '../types';
 import { PRESET_BADGES } from '../data/presets';
 import { AnimalType } from './PixelMouse/animalDensity';
-import { Sliders, Download, RotateCcw, Palette, Layers } from 'lucide-react';
+import { Sliders, Download, RotateCcw, Palette, Layers, Globe } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { Language, translations } from '../i18n/translations';
 
 export interface PixelColorOption {
   id: string;
@@ -33,6 +34,8 @@ interface ControlToolbarProps {
   onSelectAnimal: (animal: AnimalType) => void;
   currentColor: PixelColorOption;
   onSelectColor: (color: PixelColorOption) => void;
+  lang: Language;
+  onToggleLanguage: () => void;
 }
 
 export const ControlToolbar: React.FC<ControlToolbarProps> = ({
@@ -46,9 +49,12 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
   currentAnimal,
   onSelectAnimal,
   currentColor,
-  onSelectColor
+  onSelectColor,
+  lang,
+  onToggleLanguage
 }) => {
   const [showTip, setShowTip] = React.useState(true);
+  const t = translations[lang];
 
   const triggerExport = () => {
     confetti({
@@ -61,10 +67,10 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
   };
 
   const getGravityLabel = () => {
-    if (gravity[1] > -10) return '0.0 G (太空)';
-    if (gravity[1] > -25) return '0.16 G (月球)';
-    if (gravity[1] < -60) return '2.0 G (重引力)';
-    return '1.0 G (地球)';
+    if (gravity[1] > -10) return t.header.gravity.space;
+    if (gravity[1] > -25) return t.header.gravity.moon;
+    if (gravity[1] < -60) return t.header.gravity.heavy;
+    return t.header.gravity.earth;
   };
 
   return (
@@ -78,11 +84,11 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-neutral-900 tracking-tight">
-              Lanyard 3D
+              {t.brand.title}
             </span>
             <span className="w-1 h-1 rounded-full bg-neutral-300" />
             <span className="text-[11px] font-normal text-neutral-500 tracking-normal">
-              Physical Canvas
+              {t.brand.subtitle}
             </span>
           </div>
         </div>
@@ -90,11 +96,11 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
         {/* Center: Animal Silhouette & Pixel Color Switcher */}
         <div className="hidden md:flex items-center gap-2 bg-white/85 backdrop-blur-2xl border border-black/[0.08] p-1.5 px-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] pointer-events-auto">
           {/* Animal Selector */}
-          <span className="text-[11px] font-semibold text-neutral-400 pl-1 pr-1">像素形象:</span>
+          <span className="text-[11px] font-semibold text-neutral-400 pl-1 pr-1">{t.header.animalLabel}</span>
           {[
-            { id: 'deer', label: '🌲 森林神鹿' },
-            { id: 'whale', label: '🐋 深海巨鲸' },
-            { id: 'fox', label: '🦊 极光白狐' }
+            { id: 'deer', label: t.header.animals.deer },
+            { id: 'whale', label: t.header.animals.whale },
+            { id: 'fox', label: t.header.animals.fox }
           ].map(item => {
             const isCur = currentAnimal === item.id;
             return (
@@ -115,10 +121,11 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
           <div className="w-[1px] h-4 bg-black/10 mx-1" />
 
           {/* Pixel Color Swatches */}
-          <span className="text-[11px] font-semibold text-neutral-400 pr-1">像素色:</span>
+          <span className="text-[11px] font-semibold text-neutral-400 pr-1">{t.header.colorLabel}</span>
           <div className="flex items-center gap-1.5">
             {PIXEL_COLORS.map(c => {
               const isCur = currentColor.id === c.id;
+              const colorName = t.header.colors[c.id as keyof typeof t.header.colors] || c.name;
               return (
                 <button
                   key={c.id}
@@ -130,8 +137,8 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
                       : 'hover:scale-110 opacity-80 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: c.hex }}
-                  title={`${c.name} (${c.hex})`}
-                  aria-label={`选择像素颜色：${c.name}`}
+                  title={`${colorName} (${c.hex})`}
+                  aria-label={`${t.header.colorLabel} ${colorName}`}
                 >
                   {isCur && (
                     <span className="w-1.5 h-1.5 rounded-full bg-white shadow-xs" />
@@ -143,12 +150,23 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2.5 pointer-events-auto">
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Bilingual Language Switcher */}
+          <button
+            onClick={onToggleLanguage}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/85 backdrop-blur-2xl border border-black/[0.08] hover:border-black/20 text-xs font-medium text-neutral-700 hover:text-black transition-all shadow-[0_8px_30px_rgba(0,0,0,0.04)] cursor-pointer"
+            title={lang === 'zh' ? 'Switch to English' : '切换为中文'}
+            aria-label="Toggle language"
+          >
+            <Globe className="w-3.5 h-3.5 text-neutral-500" />
+            <span className="font-semibold text-[11px] tracking-wide">{lang === 'zh' ? 'EN' : '中'}</span>
+          </button>
+
           {/* Gravity Pill */}
           <button
             onClick={onToggleGravity}
             className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/85 backdrop-blur-2xl border border-black/[0.08] hover:border-black/20 text-xs font-medium text-neutral-700 hover:text-black transition-all shadow-[0_8px_30px_rgba(0,0,0,0.04)] cursor-pointer"
-            title="点击切换重力参数"
+            title={lang === 'zh' ? '点击切换重力参数' : 'Click to cycle gravity'}
           >
             <span
               className="w-2 h-2 rounded-full animate-pulse"
@@ -163,7 +181,7 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
             className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-neutral-800 text-xs font-medium transition-all shadow-[0_8px_20px_rgba(0,0,0,0.15)] cursor-pointer"
           >
             <Sliders className="w-3.5 h-3.5 text-white" />
-            <span>自定工牌</span>
+            <span>{t.header.customizeBtn}</span>
           </button>
         </div>
       </header>
@@ -176,7 +194,7 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
               className="w-2 h-2 rounded-full shrink-0"
               style={{ backgroundColor: currentColor.hex }}
             />
-            <span>像素动物全屏展开，中央工牌区域已保护避让；鼠标滑过两侧可产生流体位移散落！</span>
+            <span>{t.header.tip}</span>
             <button
               onClick={() => setShowTip(false)}
               className="ml-2 text-neutral-400 hover:text-neutral-800 text-xs cursor-pointer"
@@ -194,6 +212,9 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
           <div className="flex items-center gap-1 bg-neutral-100/80 p-1 rounded-full border border-black/[0.04]">
             {PRESET_BADGES.map(preset => {
               const isSelected = currentBadge.id === preset.id;
+              const displayName = lang === 'en'
+                ? (preset.englishName ? preset.englishName.split(' ')[0] : preset.name)
+                : preset.name;
               return (
                 <button
                   key={preset.id}
@@ -204,7 +225,7 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
                       : 'text-neutral-600 hover:text-neutral-900 hover:bg-black/[0.04]'
                   }`}
                 >
-                  {preset.name.split(' ')[0]}
+                  {displayName}
                 </button>
               );
             })}
@@ -216,20 +237,20 @@ export const ControlToolbar: React.FC<ControlToolbarProps> = ({
           <button
             onClick={onShake}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/[0.03] hover:bg-black/[0.07] border border-black/[0.06] text-xs font-medium text-neutral-800 transition-all cursor-pointer"
-            title="给工牌施加轻微物理摆动冲量"
+            title={lang === 'zh' ? '给工牌施加轻微物理摆动冲量' : 'Apply gentle physics impulse'}
           >
             <RotateCcw className="w-3.5 h-3.5 text-neutral-600" />
-            <span>轻摇工牌</span>
+            <span>{t.dock.swingBadge}</span>
           </button>
 
           {/* Export PNG */}
           <button
             onClick={triggerExport}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/[0.06] hover:bg-black/[0.12] border border-black/[0.08] text-xs font-medium text-neutral-900 transition-all cursor-pointer"
-            title="导出当前工牌高清图片"
+            title={lang === 'zh' ? '导出当前工牌高清图片' : 'Export high-res badge images'}
           >
             <Download className="w-3.5 h-3.5 text-neutral-700" />
-            <span>导出</span>
+            <span>{t.dock.export}</span>
           </button>
         </div>
       </div>
